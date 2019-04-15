@@ -13,6 +13,7 @@ import (
 	packager "github.com/hyperledger/fabric-sdk-go/pkg/fab/ccpackager/gopackager"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
+	ipfs "github.com/ipfs/go-ipfs-api"
 	"github.com/pkg/errors"
 )
 
@@ -35,6 +36,9 @@ type FabricSetup struct {
 
 	// User parameters
 	UserName string
+
+	// IPFS shell
+	sh ipfs.Shell
 
 	// Local parameters
 	initialized bool
@@ -141,6 +145,9 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create new event client")
 	}
 	fmt.Println("Event client created")
+
+	// Start a IPFS shell
+	setup.sh = ipfs.NewShell("0.0.0.0:5001")
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
