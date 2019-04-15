@@ -82,6 +82,7 @@ function networkDown() {
         echo "ERROR !!!! Test failed"
         exit 1
     fi
+    docker rm $( docker ps -aq  )
 }
 
 if [ "${ACTION}" == "up" ]; then

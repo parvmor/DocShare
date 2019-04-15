@@ -38,7 +38,7 @@ type FabricSetup struct {
 	UserName string
 
 	// IPFS shell
-	sh ipfs.Shell
+	sh *ipfs.Shell
 
 	// Local parameters
 	initialized bool

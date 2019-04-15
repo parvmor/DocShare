@@ -24,7 +24,7 @@ func main() {
 
 			// Channel parameters
 			ChannelID:     "docshare",
-			ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/parvmor/docshare/network/artifacts/docshare.channel.tx",
+			ChannelConfig: "/home/centos/go/src/github.com/parvmor/docshare/network/artifacts/docshare.channel.tx",
 
 			// Chaincode parameters
 			ChainCodeID:     "docshare",
