@@ -17,8 +17,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-var sdk *fabsdk.FabricSDK
-
 // FabricSetup to maintain per user blockchain state
 type FabricSetup struct {
 	// Network parameters
@@ -60,22 +58,15 @@ func (setup *FabricSetup) Initialize() error {
 	}
 
 	// Initialize the SDK with the configuration file
-	if sdk == nil {
-		sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
-		if err != nil {
-			return errors.WithMessage(err, "failed to create SDK")
-		}
-		setup.sdk = sdk
-		fmt.Println("SDK created")
-	} else {
-		setup.sdk = sdk
+	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
+	if err != nil {
+		return errors.WithMessage(err, "failed to create SDK")
 	}
+	setup.sdk = sdk
+	fmt.Println("SDK created")
 
 	// The resource management client is responsible for managing channels (create/update channel)
 	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName))
-	if err != nil {
-		return errors.WithMessage(err, "failed to load Admin identity")
-	}
 	resMgmtClient, err := resmgmt.New(resourceManagerClientContext)
 	if err != nil {
 		return errors.WithMessage(err, "failed to create channel management client from Admin identity")

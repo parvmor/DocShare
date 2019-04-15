@@ -2,57 +2,45 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/parvmor/docshare/blockchain"
 )
 
-const totalUsers int = 100
-
-var fSetupMap map[string]blockchain.FabricSetup
-
 func main() {
-	fSetupMap = make(map[string]blockchain.FabricSetup)
-
 	// Definition of the Fabric SDK properties
-	for i := 1; i <= totalUsers; i++ {
-		userName := "User" + strconv.Itoa(i)
-		fSetup := blockchain.FabricSetup{
-			// Network parameters
-			OrdererID: "orderer.hf.docshare.io",
+	fSetup := blockchain.FabricSetup{
+		// Network parameters
+		OrdererID: "orderer.hf.docshare.io",
 
-			// Channel parameters
-			ChannelID:     "docshare",
-			ChannelConfig: "/home/centos/go/src/github.com/parvmor/docshare/network/artifacts/docshare.channel.tx",
+		// Channel parameters
+		ChannelID:     "docshare",
+		ChannelConfig: "/home/centos/go/src/github.com/parvmor/docshare/network/artifacts/docshare.channel.tx",
 
-			// Chaincode parameters
-			ChainCodeID:     "docshare",
-			ChaincodeGoPath: "/home/centos/go",
-			ChaincodePath:   "github.com/parvmor/docshare/chaincode/",
-			OrgAdmin:        "Admin",
-			OrgName:         "org1",
-			ConfigFile:      "config.yaml",
+		// Chaincode parameters
+		ChainCodeID:     "docshare",
+		ChaincodeGoPath: "/home/centos/go",
+		ChaincodePath:   "github.com/parvmor/docshare/chaincode/",
+		OrgAdmin:        "Admin",
+		OrgName:         "org1",
+		ConfigFile:      "config.yaml",
 
-			// User parameters
-			UserName: userName,
-		}
+		// User parameters
+		UserName: "User1",
+	}
 
-		// Initialize the SDK
-		err := fSetup.Initialize()
-		if err != nil {
-			fmt.Printf("Unable to initialize the Fabric SDK: %v for %s\n", err, userName)
-			return
-		}
-		// Close SDK
-		defer fSetup.CloseSDK()
+	// Initialize the SDK
+	err := fSetup.Initialize()
+	if err != nil {
+		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
+		return
+	}
+	// Close SDK
+	defer fSetup.CloseSDK()
 
-		// Install and instantiate the chaincode
-		err = fSetup.InstallAndInstantiateCC()
-		if err != nil {
-			fmt.Printf("Unable to install and instantiate the chaincode: %v for %s\n", err, userName)
-			return
-		}
-
-		fSetupMap[userName] = fSetup
+	// Install and instantiate the chaincode
+	err = fSetup.InstallAndInstantiateCC()
+	if err != nil {
+		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+		return
 	}
 }

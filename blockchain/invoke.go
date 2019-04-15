@@ -9,7 +9,7 @@ import (
 )
 
 // InvokePutFile will call the chaincode to put the file
-func (setup *FabricSetup) InvokePutFile(value []byte, filename string) (string, error) {
+func (setup *FabricSetup) InvokePutFile(value []byte, filename, username string) (string, error) {
 	// Add value into ipfs
 	cid, err := setup.sh.Add(bytes.NewReader(value))
 	if err != nil {
@@ -23,7 +23,7 @@ func (setup *FabricSetup) InvokePutFile(value []byte, filename string) (string, 
 	args = append(args, "putFile")
 	args = append(args, cid)
 	args = append(args, filename)
-	args = append(args, setup.UserName)
+	args = append(args, username)
 
 	eventID := "eventInvokePutFile"
 

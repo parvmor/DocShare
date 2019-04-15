@@ -8,14 +8,14 @@ import (
 )
 
 // QueryGetFile query the chaincode to fetch the given filename
-func (setup *FabricSetup) QueryGetFile(filename string) ([]byte, error) {
+func (setup *FabricSetup) QueryGetFile(filename, username string) ([]byte, error) {
 	// Prepare arguments
 	var args []string
 	args = append(args, "invoke")
 	args = append(args, "query")
 	args = append(args, "getFile")
 	args = append(args, filename)
-	args = append(args, setup.UserName)
+	args = append(args, username)
 
 	response, err := setup.client.Query(channel.Request{
 		ChaincodeID: setup.ChainCodeID,
