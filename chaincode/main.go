@@ -111,8 +111,26 @@ func (t *DocShareChainCode) invoke(stub shim.ChaincodeStubInterface, args []stri
 			return shim.Error("Failed to update state of " + key)
 		}
 
-		// Notify listeners that an event "eventInvokePutFile" have been executed (check line 19 in the file invoke.go)
+		// Notify listeners that an event "eventInvokePutFile" have been executed
 		err = stub.SetEvent("eventInvokePutFile", []byte{})
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+
+		// Return this value in response
+		return shim.Success(nil)
+	} else if args[1] == "shareFile" && len(args) == 6 {
+		// Key will be username_filename
+		key := args[5] + "_" + args[4] + "_" + args[3]
+
+		// Write the new value in the ledger
+		err := stub.PutState(key, []byte(args[2]))
+		if err != nil {
+			return shim.Error("Failed to update state of " + key)
+		}
+
+		// Notify listeners that an event "eventInvokePutFile" have been executed
+		err = stub.SetEvent("eventInvokeShareFile", []byte{})
 		if err != nil {
 			return shim.Error(err.Error())
 		}
