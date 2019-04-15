@@ -6,9 +6,30 @@
 </div>
 <h1>Home</h1>
 
+{{ if .Response }}
+{{ if .Success }}
+<div class="alert alert-success" role="alert">
+    Successfully uploaded, transaction ID: {{ .TransactionId }}
+</div>
+{{ else }}
+<div class="alert alert-danger" role="alert">
+    Unable to submit the request, retry later.
+</div>
+{{ end }}
+{{ end }}
+
 <pre>
-    Hello: {{.Hello}}
+    Upload You File
 </pre>
 
-<a href="request">Change the Hello value</a>
+<form enctype="multipart/form-data" class="form-inline" action="request" method="post">
+    <div class="form-group">
+        <input type="file" name="uploadfile">
+    </div>
+    <input type="hidden" name="submitted" value="true">
+    <button type="submit" class="btn btn-default">Upload the file</button>
+</form>
+
+
+<a href="request">Get your file from Blockchain</a>
 {{end}}

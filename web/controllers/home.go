@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"io/ioutil"
 )
 
 func (app *Application) HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -11,9 +12,24 @@ func (app *Application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	data := &struct {
-		Hello string
+		TransactionId string
+		Success       bool
+		Response      bool
 	}{
-		Hello: "Hi there",
+		TransactionId: "",
+		Success:       false,
+		Response:      false,
 	}
-	renderTemplate(w, r, "home.html", data)
+
+	if r.FormValue("submitted") == "true" {
+			r.ParseMultipartForm(32 << 20)
+			file, handler, err1 := r.FormFile("uploadfile")
+			fileBytes, err2 := ioutil.ReadAll(file)
+			if err1 != nil || err2 != nil {
+				http.Error(w, "Unable to upload the file", 500)
+			}
+
+			app.fabric.Query(handler.Filename)
+	}
+		renderTemplate(w, r, "home.html", data)
 }
