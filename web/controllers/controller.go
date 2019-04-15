@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/parvmor/docshare/blockchain"
 	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/parvmor/docshare/blockchain"
 )
 
+// Application struct
 type Application struct {
 	Fabric *blockchain.FabricSetup
 }
@@ -40,6 +42,7 @@ func renderTemplate(w http.ResponseWriter, r *http.Request, templateName string,
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
+
 	if err := resultTemplate.ExecuteTemplate(w, "layout", data); err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, http.StatusText(500), 500)

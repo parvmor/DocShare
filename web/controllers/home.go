@@ -4,16 +4,13 @@ import (
 	"net/http"
 )
 
+// HomeHandler function
 func (app *Application) HomeHandler(w http.ResponseWriter, r *http.Request) {
-	// helloValue, err := app.Fabric.QueryHello()
-	// if err != nil {
-	// 	http.Error(w, "Unable to query the blockchain", 500)
-	// }
-
-	data := &struct {
-		Hello string
-	}{
-		Hello: "Hi there",
+	session, _ := store.Get(r, "cookie-name")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
 	}
-	renderTemplate(w, r, "home.html", data)
+
+	renderTemplate(w, r, "home.html", nil)
 }
