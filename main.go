@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/parvmor/docshare/blockchain"
 )
@@ -16,7 +17,7 @@ func main() {
 
 	// Definition of the Fabric SDK properties
 	for i := 1; i <= totalUsers; i++ {
-		userName := "User" + string(i)
+		userName := "User" + strconv.Itoa(i)
 		fSetup := blockchain.FabricSetup{
 			// Network parameters
 			OrdererID: "orderer.hf.docshare.io",

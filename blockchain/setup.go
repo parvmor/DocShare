@@ -100,6 +100,7 @@ func (setup *FabricSetup) Initialize() error {
 	return nil
 }
 
+// InstallAndInstantiateCC to install and instantiate chaincode
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
 	// Create the chaincode package that will be sent to the peers
@@ -145,6 +146,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	return nil
 }
 
+// CloseSDK closes the SDK
 func (setup *FabricSetup) CloseSDK() {
 	setup.sdk.Close()
 }
