@@ -17,6 +17,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+var sdk *fabsdk.FabricSDK
+
 // FabricSetup to maintain per user blockchain state
 type FabricSetup struct {
 	// Network parameters
@@ -58,12 +60,16 @@ func (setup *FabricSetup) Initialize() error {
 	}
 
 	// Initialize the SDK with the configuration file
-	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
-	if err != nil {
-		return errors.WithMessage(err, "failed to create SDK")
+	if sdk == nil {
+		sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
+		if err != nil {
+			return errors.WithMessage(err, "failed to create SDK")
+		}
+		setup.sdk = sdk
+		fmt.Println("SDK created")
+	} else {
+		setup.sdk = sdk
 	}
-	setup.sdk = sdk
-	fmt.Println("SDK created")
 
 	// The resource management client is responsible for managing channels (create/update channel)
 	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName))
@@ -125,7 +131,15 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.docshare.io"})
 
-	resp, err := setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodeGoPath, Version: "0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
+	resp, err := setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{
+		Name:    setup.ChainCodeID,
+		Path:    setup.ChaincodeGoPath,
+		Version: "0",
+		Args: [][]byte{
+			[]byte("init"),
+		},
+		Policy: ccPolicy,
+	})
 	if err != nil || resp.TransactionID == "" {
 		return errors.WithMessage(err, "failed to instantiate the chaincode")
 	}

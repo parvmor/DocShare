@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/parvmor/docshare/blockchain"
@@ -28,7 +27,7 @@ func main() {
 
 			// Chaincode parameters
 			ChainCodeID:     "docshare",
-			ChaincodeGoPath: os.Getenv("GOPATH"),
+			ChaincodeGoPath: "/home/centos/go",
 			ChaincodePath:   "github.com/parvmor/docshare/chaincode/",
 			OrgAdmin:        "Admin",
 			OrgName:         "org1",
