@@ -1,0 +1,15 @@
+{{define "title"}} Signup {{end}}
+
+{{define "body"}}
+<h1>Signup</h1>
+
+<form class="form-inline" action="signup" method="post">
+    <div class="form-group">
+        <input type="text" class="form-control" id="username" placeholder="Username" name="username">
+        <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+    </div>
+    <button type="submit" class="btn btn-default" name="submitted" value="submit">Signup</button>
+</form>
+
+<a href="signup">Signin from a previous account</a>
+{{end}}
