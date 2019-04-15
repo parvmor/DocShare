@@ -17,7 +17,7 @@ func main() {
 	// Definition of the Fabric SDK properties
 	for i := 1; i <= totalUsers; i++ {
 		userName := "User" + string(i)
-		fSetupMap[userName] = blockchain.FabricSetup{
+		fSetup := blockchain.FabricSetup{
 			// Network parameters
 			OrdererID: "orderer.hf.docshare.io",
 
@@ -38,13 +38,13 @@ func main() {
 		}
 
 		// Initialize the SDK
-		err := fSetupMap[userName].Initialize()
+		err := fSetup.Initialize()
 		if err != nil {
 			fmt.Printf("Unable to initialize the Fabric SDK: %v for %s\n", err, userName)
 			return
 		}
 		// Close SDK
-		defer fSetupMap[userName].CloseSDK()
+		defer fSetup.CloseSDK()
 
 		// Install and instantiate the chaincode
 		err = fSetup.InstallAndInstantiateCC()
@@ -52,5 +52,7 @@ func main() {
 			fmt.Printf("Unable to install and instantiate the chaincode: %v for %s\n", err, userName)
 			return
 		}
+
+		fSetupMap[userName] = fSetup
 	}
 }
