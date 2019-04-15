@@ -12,6 +12,8 @@ const totalUsers int = 100
 var fSetupMap map[string]blockchain.FabricSetup
 
 func main() {
+	fSetupMap = make(map[string]blockchain.FabricSetup)
+
 	// Definition of the Fabric SDK properties
 	for i := 1; i <= totalUsers; i++ {
 		userName := "User" + string(i)
