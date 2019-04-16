@@ -1,9 +1,10 @@
 package controllers
 
 import (
-    "io/ioutil"
+  "io"
+  "io/ioutil"
 	"net/http"
-	b64 "encoding/base64"
+  "bytes"
 )
 
 // RequestHandler function
@@ -34,11 +35,10 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		fileBytes = fileBytes[BlockSize:]
 		stream := CFBDecrypter(aeskey[user], iv);
 		stream.XORKeyStream(fileBytes, fileBytes);
-		fileString := b64.StdEncoding.EncodeToString(fileBytes)
-
-		data.Success = true
-		data.Embed = "<embed src=data:application/pdf;base64," + string(fileString) + ">"
-	}
+    w.Header().Set("Content-type", "application/pdf")
+    io.Copy(w, bytes.NewReader(fileBytes))
+    return
+  }
 
 	renderTemplate(w, r, "getfile.html", data)
 }
@@ -68,7 +68,7 @@ func (app *Application) ReceiveFileHandler(w http.ResponseWriter, r *http.Reques
             return
 		}
 
-        priv := keypair[user]
+    priv := keypair[user]
 		value, err := RSADecrypt(&priv, fileBytes, []byte("sharing"))
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
@@ -92,10 +92,9 @@ func (app *Application) ReceiveFileHandler(w http.ResponseWriter, r *http.Reques
 		fileBytes = fileBytes[BlockSize:]
 		stream := CFBDecrypter(ek, iv);
 		stream.XORKeyStream(fileBytes, fileBytes);
-		fileString := b64.StdEncoding.EncodeToString(fileBytes)
-
-		data.Success = true
-		data.Embed = "<embed src=data:application/pdf;base64," + fileString + ">"
+    w.Header().Set("Content-type", "application/pdf")
+    io.Copy(w, bytes.NewReader(fileBytes))
+    return
 
 	}
 	renderTemplate(w, r, "receivefile.html", data)

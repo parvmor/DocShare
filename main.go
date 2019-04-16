@@ -16,11 +16,11 @@ func main() {
 
 		// Channel parameters
 		ChannelID:     "docshare",
-		ChannelConfig: "/home/centos/go/src/github.com/parvmor/docshare/network/artifacts/docshare.channel.tx",
+		ChannelConfig: "/home/hritvik/go/src/github.com/parvmor/docshare/network/artifacts/docshare.channel.tx",
 
 		// Chaincode parameters
 		ChainCodeID:     "docshare",
-		ChaincodeGoPath: "/home/centos/go",
+		ChaincodeGoPath: "/home/hritvik/go",
 		ChaincodePath:   "github.com/parvmor/docshare/chaincode/",
 		OrgAdmin:        "Admin",
 		OrgName:         "org1",

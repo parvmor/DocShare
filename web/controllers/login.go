@@ -51,8 +51,14 @@ func (app *Application) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		session.Values["authenticated"] = true
 		session.Values["user"] = user
 		session.Save(r, w)
-
-		renderTemplate(w, r, "home.html", nil)
+		data := &struct {
+			Success	bool
+			Embed		string
+		}{
+			Success:	false,
+			Embed:		"",
+		}
+		renderTemplate(w, r, "getfile.html", data)
 	} else {
 		renderTemplate(w, r, "signup.html", nil)
 	}
@@ -77,8 +83,15 @@ func (app *Application) SigninHandler(w http.ResponseWriter, r *http.Request) {
 		session.Values["authenticated"] = true
 		session.Values["user"] = user
 		session.Save(r, w)
-
-		renderTemplate(w, r, "home.html", nil)
+		
+		data := &struct {
+			Success	bool
+			Embed		string
+		}{
+			Success:	false,
+			Embed:		"",
+		}
+		renderTemplate(w, r, "getfile.html", data)
 	} else {
 		renderTemplate(w, r, "default.html", nil)
 	}

@@ -3,7 +3,7 @@
 {{define "body"}}
 <h1>Get a Shared file from Blockchain</h1>
 
-<form class="form-inline" action="getfile" method="post">
+<form class="form-inline" action="receivefile" method="post">
     <div class="form-group">
         <label for="filename">Filename</label>
         <input type="text" class="form-control" id="filevalue" placeholder="abc.pdf" name="filename">
@@ -17,8 +17,6 @@
 <a href="home">Back to Home</a>
 
 {{ if .Success }}
-<div class="alert alert-success" role="alert">
-    {{ .Embed }}
-</div>
+<embed src="{{ .Embed }}">
 {{ end }}
 {{end}}

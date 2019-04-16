@@ -15,8 +15,6 @@
 <a href="home">Back to Home</a>
 
 {{ if .Success }}
-<div class="alert alert-success" role="alert">
-    {{ .Embed }}
-</div>
+<embed src="{{ .Embed }}">
 {{ end }}
 {{end}}
