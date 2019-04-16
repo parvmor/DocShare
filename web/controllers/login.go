@@ -40,13 +40,13 @@ func (app *Application) SignupHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		priv, err = GenerateRSAKey()
+		priv, err := GenerateRSAKey()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		keypair[user] = *priv
-		aeskey[user] = Argon2Key([]byte(password), key, uint32(AESKeySize))
+		aeskey[user] = Argon2Key([]byte(userpass[user]), key, uint32(AESKeySize))
 		userpass[user] = passhash
 		session.Values["authenticated"] = true
 		session.Values["user"] = user

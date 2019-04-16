@@ -44,7 +44,7 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 		value := append(iv, ciphertext...)
 
 		// Put them in the blockchain
-		txnid, err := app.fabric.InvokePutFile(value, handler.Filename, user)
+		txnid, err := app.Fabric.InvokePutFile(value, handler.Filename, user)
 
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
@@ -110,10 +110,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		app.fabric.InvokeShareFile(sharingdata, handler.Filename, user, receiver)
-
-		receiver := r.FormValue("receiver")
-		txnid, err := app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
+		txnid, err := app.Fabric.InvokeShareFile(sharingdata, handler.Filename, user, receiver)
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}

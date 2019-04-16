@@ -1,6 +1,7 @@
 package controllers
 
 import (
+    "io/ioutil"
 	"net/http"
 	b64 "encoding/base64"
 )
@@ -33,7 +34,7 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		fileBytes = fileBytes[BlockSize:]
 		stream := CFBDecrypter(aeskey[user], iv);
 		stream.XORKeyStream(fileBytes, fileBytes);
-		fileString := b64.StdEncoding.EncodeString(fileBytes)
+		fileString := b64.StdEncoding.EncodeToString(fileBytes)
 
 		data.Success = true
 		data.Embed = "<embed src=data:application/pdf;base64," + string(fileString) + ">"
@@ -64,26 +65,34 @@ func (app *Application) ReceiveFileHandler(w http.ResponseWriter, r *http.Reques
 
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
+            return
 		}
 
-		value := RSADecrypt(keypair[user], fileBytes, []byte("sharing"))
+        priv := keypair[user]
+		value, err := RSADecrypt(&priv, fileBytes, []byte("sharing"))
+		if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+            return
+		}
+
 		ek := value[:AESKeySize]
 		cid := value[AESKeySize:]
-
 		reader, err := shell.Cat(string(cid))
 		if err != nil {
-			return nil, err
+			http.Error(w, "Unable to query Blockchain", 500)
+			return
 		}
-		fileBytes, err := ioutil.ReadAll(reader)
+		fileBytes, err = ioutil.ReadAll(reader)
 		if err != nil {
-			return nil, err
+			http.Error(w, "Unable to query Blockchain", 500)
+			return
 		}
 
 		iv := fileBytes[:BlockSize]
 		fileBytes = fileBytes[BlockSize:]
 		stream := CFBDecrypter(ek, iv);
 		stream.XORKeyStream(fileBytes, fileBytes);
-		fileString := b64.StdEncoding.EncodeString(fileBytes)
+		fileString := b64.StdEncoding.EncodeToString(fileBytes)
 
 		data.Success = true
 		data.Embed = "<embed src=data:application/pdf;base64," + fileString + ">"
