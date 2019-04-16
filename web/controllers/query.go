@@ -12,5 +12,28 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderTemplate(w, r, "request.html", nil)
+	user := session.Values["user"].(string)
+
+	data := &struct {
+		TransactionID string
+		Success       bool
+		Response      bool
+		Embed					string
+	}{
+		TransactionID: "",
+		Success:       false,
+		Response:      false,
+		Embed:				 ""
+	}
+	if r.FormValue("submitted") == "true" {
+		txnid, err := app.Fabric.QueryGetFile(r.FormValue("filename"), user)
+		if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+		}
+		data.TransactionId = txnid
+		data.Success = true
+		data.Response = true
+		data.Embed = 
+	}
+	renderTemplate(w, r, "request.html", data)
 }

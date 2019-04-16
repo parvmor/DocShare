@@ -35,7 +35,15 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		app.Fabric.InvokePutFile(fileBytes, handler.Filename, user)
+		//convert to base64 encrypt here
+
+		txnid, err := app.Fabric.InvokePutFile(fileBytes, handler.Filename, user)
+		if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+		}
+		data.TransactionId = txnid
+		data.Success = true
+		data.Response = true
 	}
 	renderTemplate(w, r, "home.html", data)
 }
