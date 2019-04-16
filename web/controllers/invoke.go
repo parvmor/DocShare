@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	b64 "encoding/base64"
 )
 
 // PutFileHandler function
@@ -51,7 +50,7 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
 
-		data.TransactionId = txnid
+		data.TransactionID = txnid
 		data.Success = true
 		data.Response = true
 	}
@@ -88,7 +87,6 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-<<<<<<< HEAD
 		// Generate a random aeskey
 		ek := RandomBytes(AESKeySize)
 		iv := RandomBytes(BlockSize)
@@ -98,7 +96,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		cipher.XORKeyStream(ciphertext, fileBytes)
 		value := append(iv, ciphertext...)
 		// Put it in IPFS
-		cid, err := setup.sh.Add(bytes.NewReader(value))
+		cid, err := shell.Add(bytes.NewReader(value))
 		if err != nil {
 			http.Error(w, "Unable to upload the file", 500)
 		}
@@ -113,18 +111,16 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		app.fabric.InvokeShareFile(sharingdata, handler.Filename, user, receiver)
-=======
-		fileBytes = []byte(b64.StdEncoding.EncodeToString(fileBytes))
 
 		receiver := r.FormValue("receiver")
 		txnid, err := app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
-		data.TransactionId = txnid
+		data.TransactionID = txnid
 		data.Success = true
 		data.Response = true
->>>>>>> 3a9e8b044ca35abe8940c32dd0b927d1d70dc51e
+
 	}
 	renderTemplate(w, r, "sharefile.html", data)
 }

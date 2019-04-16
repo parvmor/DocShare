@@ -20,7 +20,7 @@ var (
 	AESKeySize = 16
 	// BlockSize for AES
 	BlockSize = aes.BlockSize
-	keypair   = make(map[string]rsa.PublicKey)
+	keypair   = make(map[string]rsa.PrivateKey)
 	aeskey    = make(map[string][]byte)
 	shell     = ipfs.NewShell("0.0.0.0:5001")
 )
