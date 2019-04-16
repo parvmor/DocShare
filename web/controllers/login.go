@@ -80,7 +80,7 @@ func (app *Application) SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 		renderTemplate(w, r, "home.html", nil)
 	} else {
-		renderTemplate(w, r, "signup.html", nil)
+		renderTemplate(w, r, "default.html", nil)
 	}
 }
 
@@ -90,4 +90,5 @@ func (app *Application) SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	session.Values["authenticated"] = false
 	session.Values["user"] = ""
 	session.Save(r, w)
+	renderTemplate(w, r, "default.html", nil)
 }
