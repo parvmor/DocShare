@@ -3,6 +3,7 @@ package controllers
 import (
 	"io/ioutil"
 	"net/http"
+	b64 "encoding/base64"
 )
 
 // PutFileHandler function
@@ -35,17 +36,18 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		//convert to base64 encrypt here
+		fileBytes = []byte(b64.StdEncoding.EncodeToString(fileBytes))
 
 		txnid, err := app.Fabric.InvokePutFile(fileBytes, handler.Filename, user)
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
+
 		data.TransactionId = txnid
 		data.Success = true
 		data.Response = true
 	}
-	renderTemplate(w, r, "home.html", data)
+	renderTemplate(w, r, "putfile.html", data)
 }
 
 // ShareFileHandler function
@@ -78,8 +80,16 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
+		fileBytes = []byte(b64.StdEncoding.EncodeToString(fileBytes))
+
 		receiver := r.FormValue("receiver")
-		app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
+		txnid, err := app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
+		if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+		}
+		data.TransactionId = txnid
+		data.Success = true
+		data.Response = true
 	}
-	renderTemplate(w, r, "home.html", data)
+	renderTemplate(w, r, "sharefile.html", data)
 }

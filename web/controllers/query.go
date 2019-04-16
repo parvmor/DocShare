@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	b64 "encoding/base64"
 )
 
 // RequestHandler function
@@ -15,25 +16,24 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 	user := session.Values["user"].(string)
 
 	data := &struct {
-		TransactionID string
 		Success       bool
-		Response      bool
 		Embed					string
 	}{
-		TransactionID: "",
 		Success:       false,
-		Response:      false,
 		Embed:				 ""
 	}
+
 	if r.FormValue("submitted") == "true" {
-		txnid, err := app.Fabric.QueryGetFile(r.FormValue("filename"), user)
+		fileBytes, err := app.Fabric.QueryGetFile(r.FormValue("filename"), user)
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
-		data.TransactionId = txnid
+
+		fileString := b64.StdEncoding.DecodeString(string(fileBytes))
+
 		data.Success = true
-		data.Response = true
-		data.Embed = 
+		data.Embed = "<embed src=data:application/pdf;base64," + fileString + ">"
 	}
-	renderTemplate(w, r, "request.html", data)
+
+	renderTemplate(w, r, "getfile.html", data)
 }
