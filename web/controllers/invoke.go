@@ -43,7 +43,7 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
 
-		data.TransactionId = txnid
+		data.TransactionID = txnid
 		data.Success = true
 		data.Response = true
 	}
@@ -87,7 +87,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
-		data.TransactionId = txnid
+		data.TransactionID = txnid
 		data.Success = true
 		data.Response = true
 	}

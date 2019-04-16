@@ -20,7 +20,7 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		Embed					string
 	}{
 		Success:       false,
-		Embed:				 ""
+		Embed:				 "",
 	}
 
 	if r.FormValue("submitted") == "true" {
@@ -29,10 +29,13 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
 
-		fileString := b64.StdEncoding.DecodeString(string(fileBytes))
+		fileString, err := b64.StdEncoding.DecodeString(string(fileBytes))
+        if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+        }
 
 		data.Success = true
-		data.Embed = "<embed src=data:application/pdf;base64," + fileString + ">"
+		data.Embed = "<embed src=data:application/pdf;base64," + string(fileString) + ">"
 	}
 
 	renderTemplate(w, r, "getfile.html", data)
