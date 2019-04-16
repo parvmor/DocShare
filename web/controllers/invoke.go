@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net/http"
-	b64 "encoding/base64"
 )
 
 // PutFileHandler function
@@ -36,9 +36,16 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		fileBytes = []byte(b64.StdEncoding.EncodeToString(fileBytes))
+		// Encrypt the file bytes
+		iv := RandomBytes(BlockSize)
+		ciphertext := make([]byte, len(fileBytes))
+		cipher := CFBEncrypter(aeskey[user], iv)
+		cipher.XORKeyStream(ciphertext, fileBytes)
+		value := append(iv, ciphertext...)
 
-		txnid, err := app.Fabric.InvokePutFile(fileBytes, handler.Filename, user)
+		// Put them in the blockchain
+		txnid, err := app.fabric.InvokePutFile(value, handler.Filename, user)
+
 		if err != nil {
 			http.Error(w, "Unable to query Blockchain", 500)
 		}
@@ -80,7 +87,30 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		fileBytes = []byte(b64.StdEncoding.EncodeToString(fileBytes))
+		// Generate a random aeskey
+		ek := RandomBytes(AESKeySize)
+		iv := RandomBytes(BlockSize)
+		// encrpyt the cipher text using it
+		ciphertext := make([]byte, len(fileBytes))
+		cipher := CFBEncrypter(ek, iv)
+		cipher.XORKeyStream(ciphertext, fileBytes)
+		value := append(iv, ciphertext...)
+		// Put it in IPFS
+		cid, err := shell.Add(bytes.NewReader(value))
+		if err != nil {
+			http.Error(w, "Unable to upload the file", 500)
+		}
+		// Create new value
+		value = append(ek, cid...)
+		// Encrpyt it using public key of receiver
+		receiver := r.FormValue("receiver")
+		pubkey := keypair[receiver].PublicKey
+		sharingdata, err := RSAEncrypt(&pubkey, value, []byte("sharing"))
+		if err != nil {
+			http.Error(w, "Unable to upload the file", 500)
+		}
+
+		app.fabric.InvokeShareFile(sharingdata, handler.Filename, user, receiver)
 
 		receiver := r.FormValue("receiver")
 		txnid, err := app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
@@ -90,6 +120,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		data.TransactionID = txnid
 		data.Success = true
 		data.Response = true
+
 	}
 	renderTemplate(w, r, "sharefile.html", data)
 }
