@@ -50,9 +50,9 @@ func (app *Application) SigninHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		passhash = userpass[user]
+		passhash := userpass[user]
 		// Compare the stored hashed password, with the hashed version of the password that was received
-		if err = bcrypt.CompareHashAndPassword(passhash, []byte(pass)); err != nil {
+		if err := bcrypt.CompareHashAndPassword(passhash, []byte(pass)); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

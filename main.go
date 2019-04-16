@@ -5,6 +5,7 @@ import (
 
 	"github.com/parvmor/docshare/blockchain"
 	"github.com/parvmor/docshare/web"
+	"github.com/parvmor/docshare/web/controllers"
 )
 
 func main() {

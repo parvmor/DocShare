@@ -13,7 +13,7 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := session.Values["user"]
+	user := session.Values["user"].(string)
 	data := &struct {
 		TransactionID string
 		Success       bool
@@ -35,7 +35,7 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		app.fabric.InvokePutFile(fileBytes, handler.Filename, user)
+		app.Fabric.InvokePutFile(fileBytes, handler.Filename, user)
 	}
 	renderTemplate(w, r, "home.html", data)
 }
@@ -48,7 +48,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user := session.Values["user"]
+	user := session.Values["user"].(string)
 	data := &struct {
 		TransactionID string
 		Success       bool
@@ -71,7 +71,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		receiver := r.FormValue("receiver")
-		app.fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
+		app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
 	}
 	renderTemplate(w, r, "home.html", data)
 }
