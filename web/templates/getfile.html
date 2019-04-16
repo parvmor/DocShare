@@ -3,19 +3,7 @@
 {{define "body"}}
 <h1>Get your file from Blockchain</h1>
 
-{{ if .Response }}
-{{ if .Success }}
-<div class="alert alert-success" role="alert">
-    Successful request, transaction ID: {{ .TransactionId }}
-</div>
-{{ else }}
-<div class="alert alert-danger" role="alert">
-    Unable to submit the request, retry later.
-</div>
-{{ end }}
-{{ end }}
-
-<form class="form-inline" action="request" method="post">
+<form class="form-inline" action="getfile" method="post">
     <div class="form-group">
         <label for="filename">Filename</label>
         <input type="text" class="form-control" id="filevalue" placeholder="abc.pdf" name="filename">
@@ -28,7 +16,7 @@
 
 {{ if .Success }}
 <div class="alert alert-success" role="alert">
-    Download you file from here.
+    {{ .Embed }}
 </div>
 {{ end }}
 {{end}}

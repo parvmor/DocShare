@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
+	b64 "encoding/base64"
 )
 
 // PutFileHandler function
@@ -14,7 +15,7 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := session.Values["user"]
+	user := session.Values["user"].(string)
 	data := &struct {
 		TransactionID string
 		Success       bool
@@ -44,9 +45,17 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 		value := append(iv, ciphertext...)
 
 		// Put them in the blockchain
-		app.fabric.InvokePutFile(value, handler.Filename, user)
+		txnid, err := app.fabric.InvokePutFile(value, handler.Filename, user)
+
+		if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+		}
+
+		data.TransactionId = txnid
+		data.Success = true
+		data.Response = true
 	}
-	renderTemplate(w, r, "home.html", data)
+	renderTemplate(w, r, "putfile.html", data)
 }
 
 // ShareFileHandler function
@@ -57,7 +66,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user := session.Values["user"]
+	user := session.Values["user"].(string)
 	data := &struct {
 		TransactionID string
 		Success       bool
@@ -79,6 +88,7 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
+<<<<<<< HEAD
 		// Generate a random aeskey
 		ek := RandomBytes(AESKeySize)
 		iv := RandomBytes(BlockSize)
@@ -103,6 +113,18 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		app.fabric.InvokeShareFile(sharingdata, handler.Filename, user, receiver)
+=======
+		fileBytes = []byte(b64.StdEncoding.EncodeToString(fileBytes))
+
+		receiver := r.FormValue("receiver")
+		txnid, err := app.Fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
+		if err != nil {
+			http.Error(w, "Unable to query Blockchain", 500)
+		}
+		data.TransactionId = txnid
+		data.Success = true
+		data.Response = true
+>>>>>>> 3a9e8b044ca35abe8940c32dd0b927d1d70dc51e
 	}
-	renderTemplate(w, r, "home.html", data)
+	renderTemplate(w, r, "sharefile.html", data)
 }

@@ -4,7 +4,7 @@
 <div class="container">
 
 </div>
-<h1>Home</h1>
+<h1>PutFile</h1>
 
 {{ if .Response }}
 {{ if .Success }}
@@ -19,10 +19,10 @@
 {{ end }}
 
 <pre>
-    Upload You File
+    Upload Your File
 </pre>
 
-<form enctype="multipart/form-data" class="form-inline" action="request" method="post">
+<form enctype="multipart/form-data" class="form-inline" action="putfile" method="post">
     <div class="form-group">
         <input type="file" name="uploadfile">
     </div>
@@ -31,5 +31,4 @@
 </form>
 
 
-<a href="request">Get your file from Blockchain</a>
 {{end}}
