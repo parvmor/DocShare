@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net/http"
 )
@@ -35,7 +36,15 @@ func (app *Application) PutFileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
-		app.fabric.InvokePutFile(fileBytes, handler.Filename, user)
+		// Encrypt the file bytes
+		iv := RandomBytes(BlockSize)
+		ciphertext := make([]byte, len(fileBytes))
+		cipher := CFBEncrypter(aeskey[user], iv)
+		cipher.XORKeyStream(ciphertext, fileBytes)
+		value := append(iv, ciphertext...)
+
+		// Put them in the blockchain
+		app.fabric.InvokePutFile(value, handler.Filename, user)
 	}
 	renderTemplate(w, r, "home.html", data)
 }
@@ -70,8 +79,30 @@ func (app *Application) ShareFileHandler(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "Unable to upload the file", 500)
 		}
 
+		// Generate a random aeskey
+		ek := RandomBytes(AESKeySize)
+		iv := RandomBytes(BlockSize)
+		// encrpyt the cipher text using it
+		ciphertext := make([]byte, len(fileBytes))
+		cipher := CFBEncrypter(ek, iv)
+		cipher.XORKeyStream(ciphertext, fileBytes)
+		value := append(iv, ciphertext...)
+		// Put it in IPFS
+		cid, err := setup.sh.Add(bytes.NewReader(value))
+		if err != nil {
+			http.Error(w, "Unable to upload the file", 500)
+		}
+		// Create new value
+		value = append(ek, cid...)
+		// Encrpyt it using public key of receiver
 		receiver := r.FormValue("receiver")
-		app.fabric.InvokeShareFile(fileBytes, handler.Filename, user, receiver)
+		pubkey := keypair[receiver].PublicKey
+		sharingdata, err := RSAEncrypt(&pubkey, value, []byte("sharing"))
+		if err != nil {
+			http.Error(w, "Unable to upload the file", 500)
+		}
+
+		app.fabric.InvokeShareFile(sharingdata, handler.Filename, user, receiver)
 	}
 	renderTemplate(w, r, "home.html", data)
 }
