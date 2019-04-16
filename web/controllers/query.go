@@ -5,6 +5,7 @@ import (
   "io/ioutil"
 	"net/http"
   "bytes"
+  "fmt"
 )
 
 // RequestHandler function
@@ -28,7 +29,7 @@ func (app *Application) GetFileHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("submitted") == "true" {
 		fileBytes, err := app.Fabric.QueryGetFile(r.FormValue("filename"), user)
 		if err != nil {
-			http.Error(w, "Unable to query Blockchain", 500)
+			http.Error(w, "Unable to query Blockchain 1", 500)
 		}
 
 		iv := fileBytes[:BlockSize]
@@ -64,14 +65,14 @@ func (app *Application) ReceiveFileHandler(w http.ResponseWriter, r *http.Reques
 		fileBytes, err := app.Fabric.QueryGetFile(r.FormValue("sharer") + "_" + r.FormValue("filename"), user)
 
 		if err != nil {
-			http.Error(w, "Unable to query Blockchain", 500)
+			http.Error(w, "Unable to query Blockchain 1", 500)
             return
 		}
 
     priv := keypair[user]
 		value, err := RSADecrypt(&priv, fileBytes, []byte("sharing"))
 		if err != nil {
-			http.Error(w, "Unable to query Blockchain", 500)
+			http.Error(w, "Unable to query Blockchain 2", 500)
             return
 		}
 
@@ -79,12 +80,12 @@ func (app *Application) ReceiveFileHandler(w http.ResponseWriter, r *http.Reques
 		cid := value[AESKeySize:]
 		reader, err := shell.Cat(string(cid))
 		if err != nil {
-			http.Error(w, "Unable to query Blockchain", 500)
+			http.Error(w, "Unable to query Blockchain 3", 500)
 			return
 		}
 		fileBytes, err = ioutil.ReadAll(reader)
 		if err != nil {
-			http.Error(w, "Unable to query Blockchain", 500)
+			http.Error(w, "Unable to query Blockchain 4", 500)
 			return
 		}
 
