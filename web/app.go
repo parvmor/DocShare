@@ -14,8 +14,9 @@ func Serve(app *controllers.Application) {
 
 	http.HandleFunc("/signin", app.SigninHandler)
 	http.HandleFunc("/signup", app.SignupHandler)
-	http.HandleFunc("/home", app.HomeHandler)
-	http.HandleFunc("/request", app.RequestHandler)
+	http.HandleFunc("/putfile", app.PutFileHandler)
+	http.HandleFunc("/getfile", app.GetFileHandler)
+	http.HandleFunc("/sharefile", app.ShareFileHandler)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusTemporaryRedirect)

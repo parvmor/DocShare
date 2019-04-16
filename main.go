@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/parvmor/docshare/blockchain"
+	"github.com/parvmor/docshare/web"
 )
 
 func main() {
@@ -43,4 +44,9 @@ func main() {
 		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 		return
 	}
+
+	app := &controllers.Application{
+		Fabric: &fSetup,
+	}
+	web.Serve(app)
 }

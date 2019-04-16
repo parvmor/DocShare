@@ -31,6 +31,7 @@ func (app *Application) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userpass[user] = passhash
 		session.Values["authenticated"] = true
+		session.Values["user"] = user
 		session.Save(r, w)
 
 		renderTemplate(w, r, "home.html", nil)
@@ -56,6 +57,7 @@ func (app *Application) SigninHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		session.Values["authenticated"] = true
+		session.Values["user"] = user
 		session.Save(r, w)
 
 		renderTemplate(w, r, "home.html", nil)
@@ -68,5 +70,6 @@ func (app *Application) SigninHandler(w http.ResponseWriter, r *http.Request) {
 func (app *Application) SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "cookie-name")
 	session.Values["authenticated"] = false
+	session.Values["user"] = ""
 	session.Save(r, w)
 }
