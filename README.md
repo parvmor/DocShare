@@ -16,3 +16,5 @@ To run the code execute the following command:
 
 To shut down the network go to the network folder and execute:
 - `$ ./network.sh down`
+
+The base code is mostly inspired from [here](https://github.com/chainHero/heroes-service/)
